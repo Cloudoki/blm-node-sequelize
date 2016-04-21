@@ -1,0 +1,10 @@
+// use this configuration if you are running sequelize-cli
+
+const path = require('path');
+const config = require('config');
+
+module.exports = {
+  config: config.get('blm.sequelize'),
+  'migrations-path': path.resolve('src/sequelize', 'migrations'),
+  'models-path': path.resolve('src/sequelize', 'models')
+};

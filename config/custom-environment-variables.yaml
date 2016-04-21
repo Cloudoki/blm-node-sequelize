@@ -1,0 +1,9 @@
+# Custom environment variables override all configuration files,
+# including local.json. Only command line options take precedence over them.
+
+blm:
+  logger:
+    transports:
+      File:
+        options:
+          label: NODE_APP_INSTANCE

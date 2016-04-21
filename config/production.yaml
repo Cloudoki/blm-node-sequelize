@@ -1,0 +1,9 @@
+executor:
+  queue:
+    name: rpc
+blm:
+  logger:
+    transports:
+      Console: false
+  sequelize:
+    database: app_production

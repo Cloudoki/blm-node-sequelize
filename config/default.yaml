@@ -1,0 +1,113 @@
+logger: &logger
+  path: ./
+  transports: &logger-transports
+    File:
+      type: File
+      options: &logger-file-options
+        filename: default.log
+        level: info
+        json: false
+        maxsize: 5242880
+        maxFiles: 100
+        timestamp: true
+        prettyPrint: true
+        colorize: true
+        tailable: true
+    Console:
+      type: Console
+      options: &logger-console-options
+        level: info
+        json: false
+        timestamp: true
+        prettyPrint: true
+        colorize: true
+
+#   Template Loggly transport configuration
+#
+#   NOTE: Add token and subdomain to your local configuration file
+#
+#   - type: Loggly
+#     options:
+#       level: info
+#       subdomain: The subdomain of your Loggly account [required]
+#       inputToken: The input token [required]
+#       tags:
+#         - your tags here
+#         - another tag
+#       json: true
+#       stripColors: true
+  levels:
+    debug: 4
+    verbose: 3
+    info: 2
+    warn: 1
+    error: 0
+  colors:
+    debug: blue
+    verbose: white
+    info: green
+    warn: yellow
+    error: red
+
+blm:
+  executor:
+    connection:
+      url: amqp://localhost
+    queue:
+      name: 'rpc_dev'
+  mailer:
+    mailFrom: 'mail@example.com'
+    platform: http://platform.com/
+    views:
+      path: './src/views'
+      extname: '.hbs'
+      defaultLayout: 'mail'
+      layoutsDir: './src/views/layouts'
+      partialsDir:
+        dir: './src/views/partials'
+        namespace: 'partials'
+  logger:
+    <<: *logger
+    transports:
+      <<: *logger-transports
+      File:
+        type: File
+        options:
+          <<: *logger-file-options
+          filename: blm.log
+  controllers: ./src/blm/controllers
+  excludeAuthentication:
+    - ping
+    - login
+    - getInvitation
+    - postInvitation
+    - resetPassword
+    - forgot
+  crud:
+    - User
+    - Account
+    - AccountUsers
+  sequelize:
+    username: root
+    password: root
+    database: app_development
+    host: 127.0.0.1
+    dialect: mysql
+    migrationStorage: sequelize
+  umzug:
+    # The storage.
+    # Possible values: 'json', 'sequelize', an object
+    storage: sequelize
+    migrations:
+      # The path to the migrations directory.
+      path: ./src/sequelize/migrations
+  oauth2:
+    accessToken:
+      # 14 days
+      expiration: 1209600000
+    invitationToken:
+      # 2 days
+      expiration: 172800000
+    resetToken:
+      # 1 day
+      expiration: 86400000

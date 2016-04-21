@@ -1,0 +1,3 @@
+blm:
+  sequelize:
+    database: app_test

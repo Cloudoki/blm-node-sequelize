@@ -1,0 +1,61 @@
+<tr> <!-- FIRST CONTENT // -->
+	<td>
+		<table border="0" cellpadding="0" cellspacing="0" width="100%" class="email-table-content">
+			<tr>
+				<td class="email-body-content">
+					<table border="0" cellpadding="0" cellspacing="0">
+
+						<tr>
+							<td>
+								<br>
+							</td>
+						</tr>
+
+						<tr>
+							<th class="email-section-title">
+								<h3>You have been invited by {{> partials/name user=data.referral}}</h3>
+							</th>
+						</tr>
+
+						<tr>
+							<td>
+								<br>
+							</td>
+						</tr>
+
+						<tr>
+							<td style="text-align: center;" class="email-text-content">
+								<a  class="greened btn submit" href="{{data.platform}}invitation.html?invitation_token={{data.invitation_token}}">Join</a>
+							</td>
+						</tr>
+
+						<tr>
+							<td>
+								<br>
+							</td>
+						</tr>
+
+						<tr>
+							<td>
+								<br>
+							</td>
+						</tr>
+
+						<tr>
+							<td>
+								<br>
+							</td>
+						</tr>
+						<tr>
+							<td style="text-align: center; font-size: 9px;" class="email-text-content copy-paste">
+								<span>or copy and paste this url in your browser:</span>
+								<br />
+								<a href="{{data.platform}}invitation.html?invitation_token={{data.invitation_token}}">{{data.platform}}invitation.html?invitation_token={{data.invitation_token}}</a>
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
+	</td>
+</tr> <!-- // END FIRST CONTENT -->
