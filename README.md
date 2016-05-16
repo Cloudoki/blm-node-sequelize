@@ -135,3 +135,38 @@ it will only be active for namespaces provided in the DEBUG environment variable
 As long as your are not doing a compute intensive task to produce the object to debug
 you may leave the debug statment there since it will be converted to noop function
 (`() => ()`) if not in debugging mode and shouldn't affect performance.
+
+
+#### Error handling
+
+All errors on the controllers or core  if not handled are propagated to the
+process error handler defined at `./src/blm/errors.js` or if the controller is
+not found it will generate a dispatch error instead. This handler is mounted
+at the end of the blm process chain in the init script `./src/blm/index.js`.
+
+It will generate an response object with the following format:
+
+```javascript
+{
+  statusCode: 401,
+  body: {
+    errors: [{
+      code: 'UNAUTHORIZED',
+      message: 'token invalid or expired'
+    }]
+  }
+}
+```
+
+If you want to propagate an error make sure it is created with code and status
+property so that it will not throw an unexpected error instead.
+
+```javascript
+// error in a route handler
+  if (conditionNotMet) {
+    const err = new Error('your message');
+    err.code = 'YOUR_CODE';
+    err.status = 400;
+    throw err;
+  }
+```
