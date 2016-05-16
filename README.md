@@ -101,3 +101,25 @@ You can use `http-server` for that:
 npm install -g http-server
 http-server
 ```
+
+#### Logging
+
+For logging you may use the provided log builder `./src/log.js` it uses the
+[winston](https://github.com/winstonjs/winston) module that provides asynchronous
+ logging and multiple transports. The builder provides an easy way to setup
+ multiple transports from a single configuration. You will want to keep them
+ to two arguments: message and data object. Avoid doing computation intensive
+ actions to generate this data object.
+
+ ```javascript
+logger.info('your message here', {
+  time: new Date().toISOString()
+  something: yourvariable
+})
+```
+
+If you want to wait on logging callback you can use the promise api:
+
+```javascript
+logger.promise.info('log this please').then(() => doSomethingAfterLogging())
+```
