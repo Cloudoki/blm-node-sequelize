@@ -219,6 +219,9 @@ register the controller on setup if they are not.
 The simplest example of a controller that implements a single operation is
 the ping controller `./src/blm/controllers/ping.js`. It exports an object
 with two fields `name` and `operations`.
+Alternately you may instead return an object with the `setup` method
+that will be called if needed (see: [controller setup](#controller-setup)) and
+this should return the controller(s) instance(s).
 
 The name is just a string to identify
 the module easily on logs and so on.
@@ -266,6 +269,8 @@ the following fields:
         const userMakingTheRequest = context.isSuperadmin ? context.user : context.admin;
     }
     ```
+
+##### Controller setup
 
 Sometimes a more complex setup of the controller is required. For that expose an
 setup method on the controller and it will be called with the corresponding config namespace
