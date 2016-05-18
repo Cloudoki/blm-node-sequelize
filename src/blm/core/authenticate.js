@@ -45,7 +45,7 @@ const verifyOauthToken = (payload, blm, context) =>
 const authenticate = (payload, blm, context) => {
   debug('authenticate', payload.token);
 
-  if (blm.excludeAuthentication[payload.operationId] || context.isInternal) {
+  if (blm.excludeAuthentication[payload.operationId]) {
     debug('excluded ', payload.operationId);
     return null;
   }
