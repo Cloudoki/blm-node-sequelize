@@ -2,6 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const Promise = require('bluebird');
 const Sequelize = require('sequelize');
 
 module.exports = config => {
@@ -22,8 +23,10 @@ module.exports = config => {
       db[model.name] = model;
     });
 
-  Object.keys(db).filter(modelName => !!db[modelName].setup)
-    .forEach(modelName => db[modelName].setup(db, config));
-
-  return db;
+  return Promise.all(Object.keys(db)
+      .filter(modelName => !!db[modelName].setup)
+      .map(modelName => db[modelName].setup(db, config)))
+    .then(() => {
+      return db;
+    });
 };

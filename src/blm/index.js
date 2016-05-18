@@ -58,68 +58,73 @@ blm.setup = config => {
   blm.cleanup = config.cleanup;
   logger = blm.logger;
   sqlConfig.logging = sqlDebug;
-  blm.db = sequelize(sqlConfig);
 
-  process.removeListener('exit',
-    blm.db.sequelize.connectionManager.onProcessExit);
+  return sequelize(sqlConfig)
+    .then(database => {
+      blm.db = database;
+      db = database;
 
-  debug('db', Object.keys(blm.db));
-  db = blm.db;
-  debug('setup blm db', sqlConfig.database);
-  return db.sequelize.authenticate().then(() => {
-    const umzugCfg = config.umzug;
-    umzugCfg.storageOptions = {
-      sequelize: db.sequelize
-    };
-    umzugCfg.logging = migDebug;
+      debug('db', Object.keys(blm.db));
 
-    if (umzugCfg.migrations && umzugCfg.migrations.path) {
-      umzugCfg.migrations.params = [db.sequelize.getQueryInterface(),
-        db.Sequelize, db
-      ];
-    } else {
-      throw new Error('missing umzug migrations.path');
-    }
+      process.removeListener('exit',
+        blm.db.sequelize.connectionManager.onProcessExit);
 
-    const umzug = new Umzug(umzugCfg);
+      debug('setup blm db', sqlConfig.database);
+      return blm.db.sequelize.authenticate();
+    }).then(() => {
+      const umzugCfg = config.umzug;
+      umzugCfg.storageOptions = {
+        sequelize: db.sequelize
+      };
+      umzugCfg.logging = migDebug;
 
-    debug('execute all pending migrations');
-    return umzug.up();
-  }).then(migrations => {
-    logger.info('migrations [' + migrations.length + ']',
-      migrations.map(m => m.file));
-    // Controller loading
-    if (config.controllers) {
-      debug('load controllers');
+      if (umzugCfg.migrations && umzugCfg.migrations.path) {
+        umzugCfg.migrations.params = [db.sequelize.getQueryInterface(),
+          db.Sequelize, db
+        ];
+      } else {
+        throw new Error('missing umzug migrations.path');
+      }
 
-      loadDir(config.controllers, blm.controllers);
+      const umzug = new Umzug(umzugCfg);
 
-      debug('setup controllers');
-      return Promise.all(_.flatten(Object.keys(blm.controllers)
-        .map(name => {
-          let ctrls;
-          if (typeof blm.controllers[name].setup === 'function') {
-            debug('generating controllers ', name);
-            ctrls = blm.controllers[name].setup(config[name], blm);
-          } else {
-            debug('controller ', name);
-            ctrls = [blm.controllers[name]];
-          }
-          return ctrls;
-        })));
-    }
+      debug('execute all pending migrations');
+      return umzug.up();
+    }).then(migrations => {
+      logger.info('migrations [' + migrations.length + ']',
+        migrations.map(m => m.file));
+      // Controller loading
+      if (config.controllers) {
+        debug('load controllers');
 
-    return Promise.Resolve([]);
-  }).then(ctrls => ctrls.forEach(
-    ctrl => blm.register(ctrl)
-  )).then(() =>
-    amqp.createExecutor(config.executor)
-  ).then(exec => {
-    executor = exec;
-    return executor.listen(blm.process,
-      err => logger.error('failed to send reply', err)
-    );
-  });
+        loadDir(config.controllers, blm.controllers);
+
+        debug('setup controllers');
+        return Promise.all(_.flatten(Object.keys(blm.controllers)
+          .map(name => {
+            let ctrls;
+            if (typeof blm.controllers[name].setup === 'function') {
+              debug('generating controllers ', name);
+              ctrls = blm.controllers[name].setup(config[name], blm);
+            } else {
+              debug('controller ', name);
+              ctrls = [blm.controllers[name]];
+            }
+            return ctrls;
+          })));
+      }
+
+      return Promise.Resolve([]);
+    }).then(ctrls => ctrls.forEach(
+      ctrl => blm.register(ctrl)
+    )).then(() =>
+      amqp.createExecutor(config.executor)
+    ).then(exec => {
+      executor = exec;
+      return executor.listen(blm.process,
+        err => logger.error('failed to send reply', err)
+      );
+    });
 };
 
 blm.close = () => Promise.resolve()
