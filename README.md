@@ -42,6 +42,7 @@ any service specific feature with exception of the response handler,
  * [API Reference](#api-reference)
  * [Testing and Coverage](#testing-and-coverage)
  * [Check linting](#check-linting)
+
 ## Features
 
 - Integrates with the **3-layered architecture**:
@@ -375,7 +376,6 @@ If you are using the CRUD controller you will also need to implement here the
 `crud` method which should return an descriptive model object (see: [how to use the CRUD controller](#how-to-use-the-crud-controller)).
 
 - [Sequelize models documentation](http://docs.sequelizejs.com/en/latest/docs/models-definition/)
-
 
 ##### How to use the migrations
 
