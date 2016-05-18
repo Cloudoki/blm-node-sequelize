@@ -249,7 +249,7 @@ response object following the [interface expected on the api](https://github.com
 
 - Besides the payload the handler will also be called with the blm as argument.
 You can use the blm to access shared services, for example the mailer service `blm.mailer`,
-the database modules `blm.db.YourModel`, and so on.
+the database modules `blm.db.YourModel`, logger `blm.logger` and so on.
 
 - The **context** object will already have some defined fields which ones will depend
 on the specific operation since it will go through different flow of core middlewares,
