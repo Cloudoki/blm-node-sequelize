@@ -216,6 +216,67 @@ register the controller on setup if they are not.
 
 #### How to create a controller and operation handler
 
+The simplest example of a controller that implements a single operation is
+the ping controller `./src/blm/controllers/ping.js`. It exports an object
+with two fields `name` and `operations`.
+
+The name is just a string to identify
+the module easily on logs and so on.
+
+The operations corresponds to a object that
+maps operationIds to the their handler.
+
+To build this handler you should keep in mind the following:
+
+- function signature, note do not use the `this` context since the operation will
+be called without binding it to controller.
+
+```javascript
+handler(payload, blm, context) => response {object | Promise.<object>}
+```
+
+- [fields provided in the payload](https://github.com/Cloudoki/api-node-swagger#how-to-build-a-custom-message-payload)
+for the specific operation and abstain from mutating the payload object or any of its nested references.
+
+- You should return a promise (or the object directly for synchronous operations) with the
+response object following the [interface expected on the api](https://github.com/Cloudoki/api-node-swagger#how-to-build-a-custom-response-handler) and taking into account the
+[payload generated fields](https://github.com/Cloudoki/mq-node-amqp#payload-generated-fields).
+
+- Besides the payload the handler will also be called with the blm as argument.
+You can use the blm to access shared services, for example the mailer service `blm.mailer`,
+the database modules `blm.db.YourModel`, and so on.
+
+- The **context** object will already have some defined fields which ones will depend
+on the specific operation since it will go through different flow of core middlewares,
+and you should be careful on assuming which are available since
+if you may later on change call the operation from a alias redirect and it will
+go through for example a different authorization flow which may not produce the
+expected fields on the context object. However you can assume you have available
+the following fields:
+    * `context.transaction`: for every blm operation an sequelize transaction is initiated so that
+    the conditions verified on the authentication and authorization still apply,
+    you should by general rule use this transaction for all the controller operations
+    on the database.
+    * every request authenticated will produce an `context.user` or `context.admin`
+    (instance of sequelize user model) and also an `context.isSuperadmin`
+    that resolves which one is available.
+
+    ```javascript
+    if (blm.excludeAuthentication[payload.operationId]) {
+        const userMakingTheRequest = context.isSuperadmin ? context.user : context.admin;
+    }
+    ```
+
+Sometimes a more complex setup of the controller is required. For that expose an
+setup method on the controller and it will be called with the corresponding config namespace
+which correspondes to `config.blm.nameOfTheController` and the BLM instance.
+It should return an array of controllers objects or a promise that will resolve
+to an array of controllers.
+
+```javascript
+setup(config, blm) => response {Array.<controllerObject> | Promise.<Array.<controllerObject>>}
+```
+
 #### Core middleware
 
 ##### Authentication
