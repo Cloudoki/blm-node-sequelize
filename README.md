@@ -22,6 +22,7 @@ any service specific feature with exception of the response handler,
  * [Usage](#usage)
      - [Executing requests](#executing-requests)
      - [How to create a controller and operation handler](#how-to-create-a-controller-and-operation-handler)
+       * [Controller setup](#controller-setup)
      - [Core middleware](#core-middleware)
        * [Authentication](#authentication)
        * [Authorization](#authorization)
