@@ -235,7 +235,8 @@ To build this handler you should keep in mind the following:
 be called without binding it to controller.
 
 ```javascript
-handler(payload, blm, context) => response {object | Promise.<object>}
+/** @returns response {object | Promise.<object>} */
+module.exports.operations.myOperationId = function handler(payload, blm, context)
 ```
 
 - [fields provided in the payload](https://github.com/Cloudoki/api-node-swagger#how-to-build-a-custom-message-payload)
@@ -274,12 +275,13 @@ the following fields:
 
 Sometimes a more complex setup of the controller is required. For that expose an
 setup method on the controller and it will be called with the corresponding config namespace
-which correspondes to `config.blm.nameOfTheController` and the BLM instance.
+which correspondes to `configuration.blm.nameOfTheController` and the BLM instance.
 It should return an array of controllers objects or a promise that will resolve
 to an array of controllers.
 
 ```javascript
-setup(config, blm) => response {Array.<controllerObject> | Promise.<Array.<controllerObject>>}
+/** @returns {Array.<controllerObject> | Promise.<Array.<controllerObject>>} */
+module.exports.setup = function ctrlSetup(config, blm)
 ```
 
 #### Core middleware
