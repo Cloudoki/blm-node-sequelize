@@ -289,7 +289,7 @@ module.exports.setup = function ctrlSetup(config, blm)
 
 Core middlewares correspond to operations that modify the flow chain by
 throwing a error (eg. unauthorize operation) or by operation redirection.
-There shouldn't be mutations to the payload object.
+Mutations to the payload object should be avoided and when required used to a minimum.
 Use the context object for sharing state with the rest of the chain and not
 with the resolved value.
 Usually you will want to add in middleware that apply to multiple operations, if
