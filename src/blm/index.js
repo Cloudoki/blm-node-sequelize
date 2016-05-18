@@ -6,6 +6,7 @@ const migDebug = utilDebug('blm:mig');
 const fs = require('fs');
 const path = require('path');
 const Promise = require('bluebird');
+const _ = require('lodash');
 const Umzug = require('umzug');
 const sequelize = require('../sequelize');
 const amqp = require('mq-node-amqp');
@@ -85,27 +86,33 @@ blm.setup = config => {
     debug('execute all pending migrations');
     return umzug.up();
   }).then(migrations => {
+    logger.info('migrations [' + migrations.length + ']',
+      migrations.map(m => m.file));
     // Controller loading
     if (config.controllers) {
       debug('load controllers');
+
       loadDir(config.controllers, blm.controllers);
-      Object.keys(blm.controllers).forEach(name => {
-        let ctrls;
-        if (typeof blm.controllers[name].setup === 'function') {
-          debug('generating controllers ', name);
-          ctrls = blm.controllers[name].setup(config[name], blm);
-        } else {
-          debug('controller ', name);
-          ctrls = [blm.controllers[name]];
-        }
-        ctrls.forEach(blm.register);
-      });
+
+      debug('setup controllers');
+      return Promise.all(_.flatten(Object.keys(blm.controllers)
+        .map(name => {
+          let ctrls;
+          if (typeof blm.controllers[name].setup === 'function') {
+            debug('generating controllers ', name);
+            ctrls = blm.controllers[name].setup(config[name], blm);
+          } else {
+            debug('controller ', name);
+            ctrls = [blm.controllers[name]];
+          }
+          return ctrls;
+        })));
     }
 
-    logger.info('migrations [' + migrations.length + ']',
-      migrations.map(m => m.file));
-    return blm;
-  }).then(() =>
+    return Promise.Resolve([]);
+  }).then(ctrls => ctrls.forEach(
+    ctrl => blm.register(ctrl)
+  )).then(() =>
     amqp.createExecutor(config.executor)
   ).then(exec => {
     executor = exec;
