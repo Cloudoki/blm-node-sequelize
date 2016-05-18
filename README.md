@@ -287,6 +287,15 @@ module.exports.setup = function ctrlSetup(config, blm)
 
 #### Core middleware
 
+Core middlewares correspond to operations that modify the flow chain by
+throwing a error (eg. unauthorize operation) or by operation redirection.
+There shouldn't be mutations to the payload object.
+Use the context object for sharing state with the rest of the chain and not
+with the resolved value.
+Usually you will want to add in middleware that apply to multiple operations, if
+thats not the case, you might as well apply the function on operation handler in
+ the controller itself.
+
 ##### Authentication
 
 The authentication middleware `./src/blm/core/authentication.js` for operations not excluded,
@@ -305,9 +314,31 @@ on if a superadmin or not respectively.
 
 ##### Authorization
 
+The authorization `./src/blm/core/authorize.js` corresponds to basically a
+switch on the operationId that applies an specialized authorization function
+if required. Here the context object is usually populated and you may use this
+on the controller to reduce the amount of queries to database. Make sure you
+keep your context propriety names relevant and be careful to avoid collisions
+along the chain.
+
 ##### Password
 
+This middleware `./src/blm/core/password.js` provides a password operation
+that validates and hashs the the password in the body field of the payload
+it will attempt to match the stored one on update.
+
 ##### Alias
+
+The alias middleware `./src/blm/core/alias.js` can be used to endpoint reuse,
+that is for example in the superadmin application interface there are endpoints
+that overlap with the base API, the alias middleware identifies this cases and
+redirects the operation to the correct one if required.
+
+Mutations to the payload object may occur here, but use with care.
+
+It can also be used to populate the context object in cases where
+the controller operations is expecting fields that since the superadmin
+skips the authorization layer will miss.
 
 #### Sequelize
 
