@@ -289,6 +289,19 @@ module.exports.setup = function ctrlSetup(config, blm)
 
 ##### Authentication
 
+The authentication middleware `./src/blm/core/authentication.js` for operations not excluded
+, that is operations not listed in the `configuration.blm.excludeAuthentication` array, will
+try to match the provided token (for the configured expiration `configuration.blm.oauth2.accessToken.expiration`)
+in the payload with the available access tokens,
+since each access token is associated with an application client id and user id
+we are able to discern between applications and have the same user on
+the superadmin application and the platform application (or any other).
+Then if sucessfull in finding this row we can use the authorizations table
+to identify if the match of user id and application client id matchs an superadmin
+authorization or not. The `context.isSuperadmin` is set true if there's a match
+and the current user data is referenced in `context.admin` or `context.user` depending
+on if a superadmin or not respectively.
+
 ##### Authorization
 
 ##### Password
