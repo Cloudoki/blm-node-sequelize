@@ -425,19 +425,20 @@ The views are generated from templates using [express-handlebars](https://github
 /**
  * sendMail
  *
- * @param {object} options             nodemailer data with some added properties
+ * @param {object} options              nodemailer data with some added options
+ *                                      fields
  *
- * @param {string | array} [options.from=configuration.mailer.mailFrom] define
- *                  					the from field in the mail, it will
- *                  					use the configured mailFrom
+ * @param {string | array} [options.from=configuration.mailer.mailFrom]
+ *                  				   	defines `from` field in the mail, it will
+ *                  				   	by default use the configured mailFrom
  *                  					
- * @param {string} [options.template]  name the template to generate the html
- *                                     (note: options.html must not be provided)
+ * @param {string} [options.template]   name the template to generate the html
+ *                                      (note: options.html must not be provided)
  *                                     
- * @param {object} [options.context]   object with data to supply the template generator
- *                                     this object will also be used as options in the
- *                                     to renderView of the express-handlebars
- *                                     module                              
+ * @param {object} [options.context]    object with data to supply the template generator
+ *                                      this object will also be used as options in the
+ *                                      to renderView of the express-handlebars module
+ *                          
  * @return {Promise.<object>}   service api response
  */
 blm.mailer.sendMail(options).then(response => console.log('mail sent', response));
