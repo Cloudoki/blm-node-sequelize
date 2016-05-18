@@ -439,7 +439,7 @@ The views are generated from templates using [express-handlebars](https://github
  *                                      this object will also be used as options in the
  *                                      to renderView of the express-handlebars module
  *                          
- * @return {Promise.<object>}   service api response
+ * @return {Promise.<object>}           mail service api response
  */
 blm.mailer.sendMail(options).then(response => console.log('mail sent', response));
 ```
