@@ -23,7 +23,7 @@ any service specific feature with exception of the response handler,
      - [Executing requests](#executing-requests)
      - [How to create a controller and operation handler](#how-to-create-a-controller-and-operation-handler)
        * [Controller setup](#controller-setup)
-     - [Core middleware](#core-middleware)
+     - [Core](#core)
        * [Authentication](#authentication)
        * [Authorization](#authorization)
        * [Password](#password)
@@ -31,16 +31,17 @@ any service specific feature with exception of the response handler,
      - [Sequelize](#sequelize)
        * [How to create a new model](#how-to-create-a-new-model)
        * [How to use the migrations](#how-to-use-the-migrations)
-       * [How to revert a migration](#how-to-revert-a-migration)
+       * [How to use the revert a migration script](#how-to-use-the-revert-a-migration-script)
+       * [How to use the CRUD controller](#how-to-use-the-crud-controller)
      - [Mailer service](#mailer-service)
        * [How to add a new mail template](#how-to-add-a-new-mail-template)
+       * [How to change to a different mailing service](#how-to-change-to-a-different-mailing-service)
      - [Logging](#logging)
      - [Debugging](#debugging)
      - [Error handling](#error-handling)
  * [API Reference](#api-reference)
  * [Testing and Coverage](#testing-and-coverage)
  * [Check linting](#check-linting)
-
 ## Features
 
 - Integrates with the **3-layered architecture**:
@@ -224,11 +225,8 @@ Alternately you may instead return an object with the `setup` method
 that will be called if needed (see: [controller setup](#controller-setup)) and
 this should return the controller(s) instance(s).
 
-The name is just a string to identify
-the module easily on logs and so on.
-
-The operations corresponds to a object that
-maps operationIds to the their handler.
+The name is just a string to identify the module easily on logs and so on.
+The operations corresponds to a object that maps operationIds to the their handler.
 
 To build this handler you should keep in mind the following:
 
@@ -285,7 +283,7 @@ to an array of controllers.
 module.exports.setup = function ctrlSetup(config, blm)
 ```
 
-#### Core middleware
+#### Core
 
 Core middlewares correspond to operations that modify the flow chain by
 throwing a error (eg. unauthorize operation) or by operation redirection.
@@ -342,15 +340,84 @@ skips the authorization layer will miss.
 
 #### Sequelize
 
+To allow for more control we are not using the sequelize sync method which handles
+ migrations for you and make sure the database matches your current defined models.
+We make use of its sister library [umzug](https://github.com/sequelize/umzug).
+
+On BLM setup up we verify the currently versioned migrations on the migrations
+folder and compare to the stored in the SQL database, if they do not match it will
+before start accepting requests migrate the database.
+
+You may also use the Sequelize CLI since `.sequelizerc` is provided. Although you
+should not need to. You may instead build an library of scripts such as the provided revert script
+`./bin/revert.js`.
+
+Also the additional parameters for migrations won't be
+used on the CLI so you should take that into account since migrations that make
+use of the additional arguments will fail.
+
 ##### How to create a new model
+
+To get started on a new model, create a new file in `./src/sequelize/models`.
+you will need to export the a function that that will be called with the
+`sequelize` instance and the `Sequelize.DataTypes`. Usually you will want here to
+call the `sequelize.define` method.
+
+After all the models are defined you may asynchronously setup relations by setting
+up a class method of the model named `setup`.
+
+```javascript
+/** @returns { Any | Promise.<Any> } */
+YourModelClass.setup(db, config)
+```
+
+If you are using the CRUD controller you will also need to implement here the
+`crud` method which should return an descriptive model object (see: [how to use the CRUD controller](#how-to-use-the-crud-controller)).
+
+- [Sequelize models documentation](http://docs.sequelizejs.com/en/latest/docs/models-definition/)
+
 
 ##### How to use the migrations
 
-##### How to revert a migration
+To get started on a new migration, create a migration.js file in `./src/sequelize/migrations`
+with a similar name format `YYYYMMDDHHmm-title-of-the-migration.js`.
+you will need to export the `up` and `down` methods which both should return a
+promise, a simple example is the first migration `201601311000-create-users.js`.
+
+Umzug migrations parameters (`./bin/start.js`):
+
+```javascript
+umzugCfg.migrations.params = [
+    // the query interface
+    db.sequelize.getQueryInterface(),
+    // Sequelize module
+    db.Sequelize,
+    // initialized models
+    db
+];
+```
+
+- [Sequelize migrations documentation](http://docs.sequelizejs.com/en/latest/docs/migrations/)
+
+##### How to use the revert a migration script
+
+To use it you can just run the script when needed, it will rollback the
+last migration applied to the database using the `down` method of
+that corresponding migration.
+
+```
+npm run revert -s
+```
+
+Note that it will then not output anything to the console except in case of error.
+
+##### How to use the CRUD controller
 
 #### Mailer service
 
 ##### How to add a new mail template
+
+##### How to change to a different mailing service
 
 #### Logging
 
@@ -385,7 +452,6 @@ it will only be active for namespaces provided in the DEBUG environment variable
 As long as your are not doing a compute intensive task to produce the object to debug
 you may leave the debug statment there since it will be converted to noop function
 (`() => ()`) if not in debugging mode and shouldn't affect performance.
-
 
 #### Error handling
 

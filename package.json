@@ -8,6 +8,7 @@
   },
   "scripts": {
     "start": "node bin/start.js",
+    "revert": "node bin/revert.js",
     "lint": "eslint bin src test",
     "debug": "DEBUG=blm:* npm start",
     "clean": "rimraf docs coverage",
