@@ -415,7 +415,56 @@ Note that it will then not output anything to the console except in case of erro
 
 #### Mailer service
 
+To use this service you can access it through `blm.mailer`. To send mails
+you can use the sendMail method, the options correspond to the
+[nodemailer data object](https://github.com/nodemailer/nodemailer#e-mail-message-fields)
+with some added properties and enhanced behaviour (see: `./src/mailer.js`).
+The views are generated from templates using [express-handlebars](https://github.com/ericf/express-handlebars)
+
+```javascript
+/**
+ * sendMail
+ *
+ * @param {object} options             nodemailer data with some added properties
+ *
+ * @param {string | array} [options.from=configuration.mailer.mailFrom] define
+ *                  					the from field in the mail, it will
+ *                  					use the configured mailFrom
+ *                  					
+ * @param {string} [options.template]  name the template to generate the html
+ *                                     (note: options.html must not be provided)
+ *                                     
+ * @param {object} [options.context]   object with data to supply the template generator
+ *                                     this object will also be used as options in the
+ *                                     to renderView of the express-handlebars
+ *                                     module                              
+ * @return {Promise.<object>}   service api response
+ */
+blm.mailer.sendMail(options).then(response => console.log('mail sent', response));
+```
+
 ##### How to add a new mail template
+
+You will need to create a new file in the `./src/views` folder with name format
+`templatename.mail.hbs`, you can also optionally provide a template for the subject
+`templatename.subject.hbs`.
+
+This template will be default use the mail layout,
+but you may provide your own in the `./src/views/layouts` and when calling the sendMail method
+provide the layout filename in `options.context.layout` property.
+
+```javascript
+blm.mailer.sendMail({
+  to: 'someone@example.com',
+  template: 'templatename',
+  context: {
+    data: {
+      somedata: 'here'
+    },
+    layout: 'otherlayout'
+  }
+})
+```
 
 ##### How to change to a different mailing service
 
@@ -486,7 +535,6 @@ property so that it will not throw an unexpected error instead.
     throw err;
   }
 ```
-
 
 ## API Reference
 

@@ -46,7 +46,7 @@ module.exports.createMailer = config => {
         opts.data.platform = platform;
       }
 
-      if (type === 'subject' && typeof opts.layout === 'undefined') {
+      if (type === 'subject') {
         opts.layout = false;
       }
 
