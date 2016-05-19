@@ -413,6 +413,112 @@ Note that it will then not output anything to the console except in case of erro
 
 ##### How to use the CRUD controller
 
+In order to use use the CRUD controller you will need to implement the `crud`
+class method on your model which returns an descriptive object of the model.
+You can use the provided models as examples:  `user`, `account`, `accountUsers`.
+
+Crud operations available, (see: `./src/blm/controllers/crud.js`):
+
+- create: creates a new instance
+
+- read: reads a instance, requires `payload.params.id`
+
+- readAll: returns all instances of the model
+
+- replace: updates the instance of the model for the fields defined in `crud.replace`,
+requires `payload.params.id`
+
+- update: updates the instance of the model for the fields defined in `crud.replace`
+
+- delete: removes the instance of the model (if it is a paranoid model will instead set the deleted_at field), requires `payload.params.id` this will respond with `204` empty response if sucessful
+
+- readAssociation: returns the association model, requires `payload.params.<ids>` which are defined in `crud.ids`
+
+- deleteAssociation: destroys an association, requires `payload.params.<ids>` which are defined in `crud.ids`
+
+- readAllAssociations: returns all assocations of one instance (defined in the payload parameters) to other model with `payload.params.<id>` which corresponds to one of the ids defined in `crud.ids`
+
+- updateAssociation: similar to update but for an association, requires `payload.params.<id>` which corresponds to one of the ids defined in `crud.ids`
+
+- createAndAssociate: creates with the fields in `payload.body` an instance of a model and associates it with an exiting one. It also creates the association model from the defined `crud.associationFields` in `payload.body`, requires `payload.params.<id>` which corresponds to one of the ids defined in `crud.ids` to identify the exiting model.
+
+- associate: creates an association between two existing models, requires `payload.params.<ids>` which are defined in `crud.ids`
+
+- createAndOrAssociate: similar to createAndAssociate but if the model already exists (fails with unique constraint)
+will instead associate the two existing models
+
+Some examples:
+
+```javascript
+{
+  // name of the Model
+  name: 'User',
+  // operations that should be bind to
+  operations: {
+    getUser: 'read',
+    getUsers: 'readAll',
+    patchUser: 'update',
+    deleteUser: 'delete',
+    postUser: 'create'
+  },
+  // name the fields that are allowed to be updated
+  update: ['firstname', 'lastname', 'password'],
+  // remove these fields from the output
+  restrict: ['password'],
+  // fields that may be null: they will be removed if they are null
+  nullable: [],
+  // describe if the model is in paranoid mode (deleted_at will be present)
+  paranoid: true
+},
+
+// relational example
+{
+  name: 'AccountUsers',
+  operations: {
+    deleteAccountUser: 'deleteAssociation',
+    postUserAccount: 'createAndAssociate',
+    getUserAccounts: 'readAllAssociations'
+  },
+  // ids correspond to the matching parameters names in for example
+  // /accounts/{account_id}/users
+  // /users/{user_id}/accounts
+  // /accounts/{account_id}/users/{user_id}
+  ids: ['account_id', 'user_id'],
+  // the model that corresponds to the above parameter name (order matters)
+  associates: ['Account', 'User'],
+  ...
+}
+
+// you may want to mutate the returned object when including associations
+// for example an user that has a role in a specific account that is defined
+// in the account_users table
+{
+  ...
+  association: 'accountUsers',
+  associationFields: ['role']
+}
+// this will mutate the user object returned from
+// user {
+//   ...
+//   accountUsers: {
+//     id: 1,
+//     role: 'admin'
+//   }
+// }
+//
+// to
+//
+// user {
+//   ...
+//   role: 'admin'
+// }
+//
+```
+
+You will also need add to list in the configuration of which models have CRUD operations
+in `configuration.blm.crud` if you are adding a new model using the crud controller
+for some operations.
+
 #### Mailer service
 
 To use this service you can access it through `blm.mailer`. To send mails
