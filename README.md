@@ -556,7 +556,8 @@ return {
 ```yaml
 blm:
   sendgrid:
-    api_key: your_sendgrid_api_key
+    auth:
+      api_key: your_sendgrid_api_key
 
 #blm:
 #  mandrill:
