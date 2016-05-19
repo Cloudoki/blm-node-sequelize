@@ -469,6 +469,101 @@ blm.mailer.sendMail({
 
 ##### How to change to a different mailing service
 
+You will need to make some changes to the `./src/mailer.js`. Here's how to replace
+the current to the SendGrid mailing service.
+
+- replace previous mandrill dependency and with sendgrid transport.
+
+```
+npm remove --save nodemailer-mandrill-transport
+```
+
+```
+npm install --save nodemailer-sendgrid-transport
+```
+
+- replace the require statement
+
+```javascript
+const sendgridTransport = require('nodemailer-sendgrid-transport');
+
+// const mandrillTransport = require('nodemailer-mandrill-transport');
+```
+- replace the handleMailerResponse function
+
+```javascript
+const handleMailerResponse = (resolve, reject) =>
+  (err, res) => err ? reject(err) : resolve(res);
+
+/**
+const handleMailerResponse = (resolve, reject) => (err, res) => {
+  if (err) {
+    return reject(err);
+  }
+
+  if (res.accepted.length) {
+    return resolve(res);
+  }
+
+  if (res.rejected.length) {
+    const error = new Error(res.rejected[0] ?
+      res.rejected[0].reject_reason : 'rejected');
+    error.code = 'MAIL_REJECTED';
+    return reject(error);
+  }
+
+  reject(new Error('unexpected mailer response'));
+};
+*/
+```
+
+- replace transport
+
+```javascript
+const sendgrid = nodemailer.createTransport(
+  sendgridTransport(config.sendgrid)
+);
+
+sendgrid.use('compile', htmlToText(config.htmlToText));
+
+return {
+  sendgrid,
+
+  ...
+
+  .then(() => new Promise((resolve, reject) =>
+    sendgrid.sendMail(options, handleMailerResponse(resolve, reject))))
+
+/**
+const mandrill = nodemailer.createTransport(
+  mandrillTransport(config.mandrill)
+);
+mandrill.use('compile', htmlToText(config.htmlToText));
+const mandrillClient = mandrill.transporter.mandrillClient;
+return {
+  mandrill,
+  mandrillClient,
+
+  ...
+
+  .then(() => new Promise((resolve, reject) =>
+    mandrill.sendMail(options, handleMailerResponse(resolve, reject))))
+*/
+```
+
+- replace your local configuration
+
+```yaml
+blm:
+  sendgrid:
+    api_key: your_sendgrid_api_key
+
+#blm:
+#  mandrill:
+#    auth:
+#      apiKey: your_mandrill_apiKey
+```
+
 #### Logging
 
 For logging you may use the provided log builder `./src/log.js` it uses the
