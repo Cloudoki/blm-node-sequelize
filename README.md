@@ -43,6 +43,8 @@ any service specific feature with exception of the response handler,
  * [Testing and Coverage](#testing-and-coverage)
  * [Check linting](#check-linting)
 
+![3-Layer Architecture](http://i.imgur.com/6KbTryk.png)
+
 ## Features
 
 - Integrates with the **3-layered architecture**:
