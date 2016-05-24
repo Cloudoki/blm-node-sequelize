@@ -10,25 +10,28 @@ const config = require('config');
 const sqlConfig = config.get('blm.sequelize');
 sqlConfig.logging = debug;
 debug('sqlConfig', sqlConfig);
-const db = sequelize(sqlConfig);
-debug('db', Object.keys(db));
-const umzugCfg = config.get('blm.umzug');
-umzugCfg.storageOptions = {
-  sequelize: db.sequelize
-};
-umzugCfg.logging = debug;
+sequelize(sqlConfig)
+.then(function(db){
 
-if (umzugCfg.migrations && umzugCfg.migrations.path) {
-  umzugCfg.migrations.params = [db.sequelize.getQueryInterface(),
-    db.Sequelize, db];
-} else {
-  throw new Error('missing umzug migrations.path');
-}
-debug('umzugCfg', umzugCfg);
-const umzug = new Umzug(umzugCfg);
+    debug('db', Object.keys(db));
+    const umzugCfg = config.get('blm.umzug');
+    umzugCfg.storageOptions = {
+      sequelize: db.sequelize
+    };
+    umzugCfg.logging = debug;
 
-db.sequelize.authenticate().then(() => umzug.down())
-  .then(migration => {
+    if (umzugCfg.migrations && umzugCfg.migrations.path) {
+      umzugCfg.migrations.params = [db.sequelize.getQueryInterface(),
+        db.Sequelize, db];
+    } else {
+      throw new Error('missing umzug migrations.path');
+    }
+    debug('umzugCfg', umzugCfg);
+    const umzug = new Umzug(umzugCfg);
+    return db.sequelize.authenticate().then(() => umzug.down());
+})
+.then(migration => {
     debug('done', migration.file);
     process.exit(1);
-  });
+});
+
