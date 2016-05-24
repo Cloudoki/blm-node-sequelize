@@ -26,8 +26,10 @@
     "debug": "^2.2.0",
     "express-handlebars": "^3.0.0",
     "handlebars": "^4.0.5",
+    "js-yaml": "^3.6.1",
     "juice": "^1.10.0",
     "lodash": "^3.10.1",
+    "mq-node-amqp": "github:cloudoki/mq-node-amqp",
     "node-mysql": "^0.4.2",
     "nodemailer": "^2.1.0",
     "nodemailer-html-to-text": "^1.0.2",
@@ -35,7 +37,6 @@
     "request-promise": "^2.0.0",
     "sequelize": "^3.19.2",
     "umzug": "^1.8.0",
-    "mq-node-amqp": "github:cloudoki/mq-node-amqp",
     "winston": "^2.1.1"
   },
   "devDependencies": {
