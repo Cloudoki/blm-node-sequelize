@@ -107,6 +107,19 @@ You will need to add a local configuration file: `./config/local.yaml` that
 will overwrite the configuration, check the [configuration](#configuration) section
  for details on how the configuration is setup.
 
+Bootstrap your application by creating the OAuth clients necessary (platform and
+superadmin) and by creating a superadmin user.
+
+```
+NODE_ENV=<production|development> npm run bootstrap -s
+```
+
+This script will create the oauthClients needed and the superadmin users according
+to the configuration. And output an JSON containing the tokens for each superadmin.
+So you can start using the Swagger-UI by using this token for `api_key`,
+you may instead just login (using the configured credentials) on the superadmin
+client application.
+
 ## Configuration
 
 For configuration the [config](https://github.com/lorenwest/node-config) module
@@ -132,11 +145,38 @@ blm:
     platform: 'http://platform.domain.com/'
 ```
 
-You might also need to change the sequelize section of the configuration to match
+You might need to change the sequelize section of the configuration to match
 your database credentials.
 
-## Launching the application
+```yaml
+# default settings
+blm:
+  sequelize:
+    username: root
+    password: root
+    host: 127.0.0.1
+```
 
+You will want to change the scripts configuration namely:
+
+```yaml
+scripts:
+  oauthclient:
+    redirect_uri:
+      platform: http://localhost:8080/auth.html
+      superadmin: http://localhost:8081/auth.html
+  superadmins:
+    -
+      firstname: Super
+      lastname: Admin
+      email: super@domain.com
+      password: pass1
+```
+
+For local development enviroment these can do but you will need definitely
+change these for other enviroments.
+
+## Launching the application
 
 #### Cluster mode
 

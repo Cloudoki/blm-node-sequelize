@@ -49,6 +49,17 @@ logger: &logger
     warn: yellow
     error: red
 
+scripts:
+  oauthclient:
+    redirect_uri:
+      platform: http://localhost:8080/auth.html
+      superadmin: http://localhost:8081/auth.html
+  superadmins:
+    -
+      firstname: Super
+      lastname: Admin
+      email: super@domain.com
+      password: pass1
 blm:
   executor:
     connection:
@@ -57,7 +68,7 @@ blm:
       name: 'rpc_dev'
   mailer:
     mailFrom: 'mail@example.com'
-    platform: http://platform.com/
+    platform: http://localhost:8080/
     views:
       path: './src/views'
       extname: '.hbs'

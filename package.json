@@ -8,14 +8,14 @@
   },
   "scripts": {
     "start": "node bin/start.js",
-    "revert": "node bin/revert.js",
+    "revert": "node scripts/revert.js",
     "lint": "eslint bin src test",
     "debug": "DEBUG=blm:* npm start",
     "clean": "rimraf docs coverage",
     "check": "npm run lint && npm run test",
     "test": "rimraf coverage && NODE_ENV=test istanbul cover node_modules/.bin/_mocha -- --reporter dot test/",
     "docs": "rimraf docs && jsdoc -c .jsdocconf -R README.md",
-    "bootstrap": "node scripts/initdb.js"
+    "bootstrap": "node scripts/oauthclient.js && node scripts/superadmin.js"
   },
   "dependencies": {
     "amqplib": "^0.4.1",
