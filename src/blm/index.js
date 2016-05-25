@@ -12,6 +12,7 @@ const sequelize = require('../sequelize');
 const amqp = require('mq-node-amqp');
 const errors = require('./errors');
 const core = require('./core');
+const closeSequelize = require('../sequelize/utils').closeSequelize;
 
 const blm = Object.create(null);
 blm.controllers = Object.create(null);
@@ -129,17 +130,7 @@ blm.setup = config => {
 
 blm.close = () => Promise.resolve()
   .then(() => executor ? executor.close() : null)
-  .then(() => {
-    if (db) {
-      const pool = db.sequelize.connectionManager.pool;
-      if (pool) {
-        return new Promise((resolve) => pool.drain(() => {
-          pool.destroyAllNow();
-          resolve();
-        }));
-      }
-    }
-  }).then(() => Promise.delay(100));
+  .then(() => db ? closeSequelize(db.sequelize) : null);
 
 blm.process = payload => {
   debug('payload', payload);

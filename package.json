@@ -15,7 +15,7 @@
     "check": "npm run lint && npm run test",
     "test": "rimraf coverage && NODE_ENV=test istanbul cover node_modules/.bin/_mocha -- --reporter dot test/",
     "docs": "rimraf docs && jsdoc -c .jsdocconf -R README.md",
-    "bootstrap": "node scripts/dbinit.js"
+    "bootstrap": "node scripts/initdb.js"
   },
   "dependencies": {
     "amqplib": "^0.4.1",
