@@ -218,8 +218,9 @@ Invitations correspond to adding an user to a specific account `POST accounts/{a
 
 This boilerplate already includes Authorizations rules that are defined in `./src/blm/core/authorize.js`. This correspond to:
  - allows the superadmins to do any operation.
- - There are a few excluded operations from authorization as configured in  `configuration.blm.excludeAuthentication`. 
- - Only users belonging to the account may: `patchAccount`, `deleteAccount`, `postAccountUser`, `getAccountUsers` and `deleteAccountUser`.
+ - There are a few excluded operations from authorization as configured in  `configuration.blm.excludeAuthentication`.
+ - Only superadmins may: `getUsers`, `getUser`, `getAccount`, `postUser`
+ - Only users belonging to the account may: `patchAccount`, `deleteAccount`, `postAccountUser`, `getAccountUsers` and `deleteAccountUser`
  - Only the user himself may: `patchUser` and `deleteUser`
 
 #### Executing requests
