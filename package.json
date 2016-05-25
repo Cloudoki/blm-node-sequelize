@@ -9,7 +9,7 @@
   "scripts": {
     "start": "node bin/start.js",
     "revert": "node scripts/revert.js",
-    "lint": "eslint bin src test",
+    "lint": "eslint bin src test scripts",
     "debug": "DEBUG=blm:* npm start",
     "clean": "rimraf docs coverage",
     "check": "npm run lint && npm run test",
