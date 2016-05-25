@@ -73,6 +73,7 @@ const password = (payload, blm, context) => {
 };
 
 module.exports = {
+  regex,
   hashPassword,
-  password,
+  password
 };
