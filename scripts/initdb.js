@@ -50,12 +50,19 @@ sequelize(sqlConfig)
             redirect_uri: ''
           }, { transaction }),
           crypt.token()
-        ]).then(data => db.OauthAccessToken.create({
-          user_id: data[0].get('id'),
-          client_id: data[1].get('client_id'),
-          access_token: data[2],
-        }, { transaction }))))
-      .then(oauthAccessToken => oauthAccessToken.get('access_token'))
+        ]).then(values => Promise.all([
+          db.OauthAccessToken.create({
+            user_id: values[0].get('id'),
+            client_id: values[1].get('client_id'),
+            access_token: values[2],
+          }, { transaction }),
+          db.Authorization.create({
+            user_id: values[0].get('id'),
+            client_id: values[1].get('client_id'),
+            superadmin: true
+          }, { transaction })
+        ]))))
+      .then(values => values[0].get('access_token'))
       .then(token => console.log(`${token}\n`)) // eslint-disable-line no-console
       .catch(db.Sequelize.UniqueConstraintError, () =>
         console.log('Super Admin already exists') // eslint-disable-line no-console
