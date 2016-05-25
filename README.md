@@ -20,6 +20,8 @@ any service specific feature with exception of the response handler,
      - [Graceful reload](#graceful-reload)
      - [Debug mode](#debug-mode)
  * [Usage](#usage)
+     - [Understanding Accounts and Users](#understanding-accounts-and-users)
+     - [Understading Authorizations](#understading-authorizations)
      - [Executing requests](#executing-requests)
      - [How to create a controller and operation handler](#how-to-create-a-controller-and-operation-handler)
        * [Controller setup](#controller-setup)
@@ -205,6 +207,21 @@ npm run debug -s
 ```
 
 ## Usage
+
+#### Understanding Accounts and Users
+
+This boilerplate already includes Accounts and Users, they have an N to M relationship, that is an user may belong to many accounts and each account may have multiple users.
+
+Invitations correspond to adding an user to a specific account `POST accounts/{account_id}/users`. This operation will send the new created user an invitation mail.
+
+#### Understading Authorizations
+
+This boilerplate already includes Authorizations rules that are defined in `./src/blm/core/authorize.js`. This correspond to:
+ - allows the superadmins to do any operation.
+ - There are a few excluded operations from authorization as configured in  `configuration.blm.excludeAuthentication`.
+ - Only superadmins may: `getUsers`, `getUser`, `getAccount`, `postUser`
+ - Only users belonging to the account may: `patchAccount`, `deleteAccount`, `postAccountUser`, `getAccountUsers` and `deleteAccountUser`
+ - Only the user himself may: `patchUser` and `deleteUser`
 
 #### Executing requests
 
