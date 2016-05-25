@@ -60,6 +60,7 @@ scripts:
       lastname: Admin
       email: super@domain.com
       password: pass1
+
 blm:
   executor:
     connection:

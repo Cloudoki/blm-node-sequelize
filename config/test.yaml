@@ -1,3 +1,7 @@
 blm:
   sequelize:
     database: app_test
+
+executor:
+  queue:
+    name: rpc_test

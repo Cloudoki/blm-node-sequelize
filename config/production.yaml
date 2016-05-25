@@ -1,7 +1,7 @@
-executor:
-  queue:
-    name: rpc
 blm:
+  executor:
+    queue:
+      name: rpc
   logger:
     transports:
       Console: false
