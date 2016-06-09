@@ -37,6 +37,7 @@
     "nodemailer-mandrill-transport": "^1.1.0",
     "request-promise": "^2.0.0",
     "sequelize": "^3.19.2",
+    "hyper-ui-donderstarter": "Cloudoki/hyper-ui-donderstarter",
     "umzug": "^1.8.0",
     "winston": "^2.1.1"
   },

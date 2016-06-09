@@ -6,8 +6,9 @@ const juice = require('juice');
 const exphbs = require('express-handlebars');
 const mandrillTransport = require('nodemailer-mandrill-transport');
 const htmlToText = require('nodemailer-html-to-text').htmlToText;
-// require your custom css here to inline into the mailer html
-const css = null;
+const fs = require('fs');
+const css = fs.readFileSync(path.resolve(process.cwd(),
+  './node_modules/hyper-ui-donderstarter/dist/css/main.css'), 'utf8');
 
 const handleMailerResponse = (resolve, reject) => (err, res) => {
   if (err) {
